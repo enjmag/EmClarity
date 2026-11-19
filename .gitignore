@@ -18,6 +18,10 @@ __pycache__/
 *.mov
 *.mkv
 test_audio/
+samples/_work/
+
+# ...except the public-domain README samples
+!samples/*.mp3
 output/
 logs/
 install*-log.txt
