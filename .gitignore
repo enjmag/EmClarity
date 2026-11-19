@@ -1,0 +1,23 @@
+# Environments and tools (rebuilt by install.bat)
+.venv/
+envs/
+bin/
+models/
+.uv-cache/
+__pycache__/
+*.pyc
+
+# Audio / video never goes in git
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.aac
+*.ogg
+*.mp4
+*.mov
+*.mkv
+test_audio/
+output/
+logs/
+install*-log.txt

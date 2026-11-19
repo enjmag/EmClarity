@@ -1,0 +1,50 @@
+# EmClarity presets. Each preset is a chain of steps run in order on the voice.
+#
+# Steps (engines):
+#   separate    Demucs voice/background split. Keeps the background so it can be saved or mixed back.
+#   deepfilter  DeepFilterNet 3 noise removal. atten_limit_db caps removal (12 = gentle, omit = full).
+#   sidon       Sidon studio-voice rebuild (main "Adobe-like" engine).
+#   resemble    Resemble Enhance rebuild (optional, needs: install.bat -WithResemble).
+#
+# strength (on sidon / resemble): 1.0 = fully rebuilt voice, 0.7 = 70% rebuilt + 30% of the
+#   voice as it was just before that step (level-matched). Same idea as Adobe's strength slider.
+# background_db: mix the separated background back in at this level (null = leave it out).
+# loudness: final EBU R128 master. Podcasts/VO: -16 LUFS. Set to null to skip.
+
+defaults:
+  sample_rate: 48000
+  loudness: { target_lufs: -16, true_peak: -1.5, lra: 11 }
+  save_background: false   # write <name>_background.wav when a separate step ran
+  mux_video: false         # for video inputs, also write an .mp4 with the enhanced audio
+
+presets:
+  vo_clean:
+    label: "VO Clean - studio voiceover (default)"
+    steps:
+      - { engine: deepfilter }
+      - { engine: sidon, strength: 0.9 }
+
+  podcast:
+    label: "Podcast - natural, keeps some room character"
+    steps:
+      - { engine: deepfilter, atten_limit_db: 24 }
+      - { engine: sidon, strength: 0.7 }
+
+  noisy_room:
+    label: "Noisy Room - music/TV/crowd behind the voice"
+    save_background: true
+    steps:
+      - { engine: separate }
+      - { engine: deepfilter }
+      - { engine: sidon, strength: 1.0 }
+
+  denoise_only:
+    label: "Denoise Only - light clean-up, no voice rebuild"
+    steps:
+      - { engine: deepfilter, atten_limit_db: 18 }
+
+  resemble:
+    label: "Resemble Enhance - alternative rebuild for A/B"
+    steps:
+      - { engine: deepfilter }
+      - { engine: resemble, strength: 0.9, nfe: 64, lambd: 0.9, tau: 0.5 }

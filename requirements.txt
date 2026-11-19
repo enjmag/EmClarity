@@ -1,0 +1,11 @@
+# Main EmClarity environment (Python 3.12).
+# torch / torchaudio are installed separately by install.ps1 from the CUDA 12.8 index.
+transformers>=4.53.3
+huggingface_hub>=0.24
+soundfile>=0.12
+numpy>=1.26,<3
+scipy>=1.11
+pyyaml>=6.0
+imageio-ffmpeg>=0.5
+demucs==4.0.1
+rich>=13
