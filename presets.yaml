@@ -17,34 +17,36 @@ defaults:
   save_background: false   # write <name>_background.wav when a separate step ran
   mux_video: false         # for video inputs, also write an .mp4 with the enhanced audio
 
+# Rule of thumb (from listening tests on real VO, 2026-11-19): decent recordings should NOT go
+# through a voice rebuild (sidon / resemble) - the vocoder adds warble and a metallic "s"
+# shimmer. Rebuild only recordings that are genuinely bad (phone, heavy echo, laptop mic).
+
 presets:
   vo_clean:
-    label: "VO Clean - studio voiceover (default)"
+    label: "VO Clean - gentle denoise, voice untouched (default)"
+    steps:
+      - { engine: deepfilter, atten_limit_db: 12 }
+
+  strong_denoise:
+    label: "Strong Denoise - removes all steady noise, voice untouched"
     steps:
       - { engine: deepfilter }
-      - { engine: sidon, strength: 0.9 }
-
-  podcast:
-    label: "Podcast - natural, keeps some room character"
-    steps:
-      - { engine: deepfilter, atten_limit_db: 24 }
-      - { engine: sidon, strength: 0.7 }
 
   noisy_room:
-    label: "Noisy Room - music/TV/crowd behind the voice"
+    label: "Noisy Room - music/TV/crowd behind the voice (+ saves background)"
     save_background: true
     steps:
       - { engine: separate }
+      - { engine: deepfilter, atten_limit_db: 24 }
+
+  rescue:
+    label: "Rescue - rebuilds the voice; only for bad recordings (phone, echo)"
+    steps:
       - { engine: deepfilter }
       - { engine: sidon, strength: 1.0 }
 
-  denoise_only:
-    label: "Denoise Only - light clean-up, no voice rebuild"
-    steps:
-      - { engine: deepfilter, atten_limit_db: 18 }
-
-  resemble:
-    label: "Resemble Enhance - alternative rebuild for A/B"
+  rescue_resemble:
+    label: "Rescue (Resemble) - alternative rebuild for A/B"
     steps:
       - { engine: deepfilter }
-      - { engine: resemble, strength: 0.9, nfe: 64, lambd: 0.9, tau: 0.5 }
+      - { engine: resemble, strength: 1.0, nfe: 64, lambd: 0.9, tau: 0.5 }

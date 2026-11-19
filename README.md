@@ -28,12 +28,17 @@ so you can drop the WAV straight onto the timeline in place of the original and 
 
 | # | Preset | Chain | Use for |
 |---|---|---|---|
-| 1 | `vo_clean` (default) | deepfilter → sidon 90 % | Voiceover, talking head, HeyGen/CK takes |
-| 2 | `podcast` | deepfilter (−24 dB cap) → sidon 70 % | Natural sound, keeps a little room |
-| 3 | `noisy_room` | separate → deepfilter → sidon 100 % | Music/TV/crowd behind the voice; also saves `_background.wav` |
-| 4 | `denoise_only` | deepfilter (−18 dB cap) | Light clean-up, no voice rebuild |
-| 5 | `resemble` | deepfilter → Resemble Enhance 90 % | Second opinion for A/B |
+| 1 | `vo_clean` (default) | deepfilter (−12 dB cap) | Decent VO / talking-head / CK takes — voice untouched |
+| 2 | `strong_denoise` | deepfilter (full) | Steady noise (fan, hiss, hum, AC) — voice untouched |
+| 3 | `noisy_room` | separate → deepfilter (−24 dB cap) | Music/TV/crowd behind the voice; also saves `_background.wav` |
+| 4 | `rescue` | deepfilter → sidon 100 % | **Bad recordings only** (phone, heavy echo, laptop mic) |
+| 5 | `rescue_resemble` | deepfilter → Resemble Enhance | Second opinion on a rescue |
 | 6 | *Compare* | runs 1, 2 and 4 | Side-by-side listening |
+
+> **Why the default doesn't rebuild the voice:** in listening tests on a real, decent-quality VO,
+> both rebuild engines (Sidon, Resemble) added ~10 % frame-to-frame warble and a synthetic
+> >12 kHz shimmer — audible as a slightly robotic, metallic "s". Denoise-only keeps the real voice
+> (warble 1.02–1.05× the original). Rebuild is worth that trade-off only when the source is bad.
 
 ## Install (Windows + NVIDIA GPU)
 
@@ -60,18 +65,17 @@ to also get an `.mp4` with the enhanced audio.
 
 ## Measured on a real VO (33 s Hook 1 take, RTX 4070 Ti SUPER)
 
-Test file = the clean take with added pink noise, 60 Hz hum and a 3-tap room echo.
+Decent-quality source (noise floor −32 dB below speech):
 
-| File | Noise floor vs speech | Similarity to the clean original |
-|---|---|---|
-| noisy input | −17 dB | 0.67 |
-| `denoise_only` | −30 dB | 0.78 |
-| `podcast` | −42 dB | 0.875 |
-| `vo_clean` | −46 dB | 0.875 |
-| `noisy_room` | −49 dB | 0.84 |
-| `resemble` | −43 dB | 0.73 |
+| Version | Noise floor | Warble vs original | >12 kHz "air" |
+|---|---|---|---|
+| original | −32 dB | 1.00 | −44 dB |
+| `vo_clean` (gentle denoise) — **picked by ear** | −44 dB | 1.05 | −44 dB |
+| `strong_denoise` | −70 dB | 1.02 | −44 dB |
+| `rescue` (Sidon) | −55 dB | 1.11 | −40 dB (synthetic) |
+| `rescue_resemble` | −61 dB | 1.09 | −36 dB (synthetic) |
 
-Speed: ~10–17 s per 33 s clip (about 2–3× faster than real time), all presets.
+Speed: denoise presets ~3–10 s, rescue ~10–17 s per 33 s clip.
 
 ## Licences
 
